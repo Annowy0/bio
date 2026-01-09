@@ -11,12 +11,10 @@
 * {
   box-sizing:border-box;
   font-family:Inter,Arial,sans-serif;
-  cursor: url("cursor.png") 16 16, auto;
+  cursor:url("cursor.png") 16 16, auto;
 }
 
-a, button {
-  cursor: url("cursor.png") 16 16, pointer;
-}
+a, button, input { cursor:url("cursor.png") 16 16, pointer; }
 
 body {
   margin:0;
@@ -34,18 +32,17 @@ body {
   width:100%;
   height:100%;
   object-fit:cover;
-  z-index:-3;
   filter:brightness(.4);
+  z-index:-3;
 }
 
 /* OVERLAY */
 .overlay {
   position:fixed;
   inset:0;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(124,124,255,.2), transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(124,124,255,.15), transparent 40%),
-    rgba(0,0,0,.6);
+  background:radial-gradient(circle at 20% 20%, rgba(124,124,255,.2), transparent 40%),
+             radial-gradient(circle at 80% 80%, rgba(124,124,255,.15), transparent 40%),
+             rgba(0,0,0,.6);
   z-index:-2;
 }
 
@@ -58,10 +55,7 @@ body {
   text-align:center;
   backdrop-filter:blur(14px);
   border:1px solid rgba(124,124,255,.25);
-  box-shadow:
-    0 0 20px rgba(124,124,255,.35),
-    0 0 50px rgba(124,124,255,.25),
-    0 0 90px rgba(124,124,255,.15);
+  box-shadow:0 0 30px rgba(124,124,255,.4);
 }
 
 .avatar {
@@ -69,18 +63,13 @@ body {
   height:96px;
   border-radius:50%;
   object-fit:cover;
-  box-shadow:
-    0 0 20px var(--neon),
-    0 0 40px rgba(124,124,255,.6);
+  box-shadow:0 0 25px var(--neon);
 }
 
 h1 {
   margin:14px 0;
   color:white;
-  text-shadow:
-    0 0 5px white,
-    0 0 15px var(--neon),
-    0 0 30px var(--neon);
+  text-shadow:0 0 20px var(--neon);
 }
 
 .links a {
@@ -91,17 +80,12 @@ h1 {
   color:white;
   text-decoration:none;
   background:linear-gradient(90deg,#5865F2,#7c7cff);
-  box-shadow:
-    0 0 15px rgba(124,124,255,.6),
-    0 0 30px rgba(124,124,255,.3);
-  transition:.25s;
+  box-shadow:0 0 15px rgba(124,124,255,.6);
+  transition:.2s;
 }
-
 .links a:hover {
-  transform:scale(1.07);
-  box-shadow:
-    0 0 30px var(--neon),
-    0 0 60px rgba(124,124,255,.9);
+  transform:scale(1.06);
+  box-shadow:0 0 40px var(--neon);
 }
 
 /* CLICK TO ENTER */
@@ -113,14 +97,57 @@ h1 {
   align-items:center;
   justify-content:center;
   z-index:99;
-  cursor:pointer;
 }
-
 #enter span {
   color:white;
   font-size:26px;
   letter-spacing:4px;
   text-shadow:0 0 25px var(--neon);
+}
+
+/* MUSIC PLAYER */
+.player {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:340px;
+  background:rgba(15,15,25,.85);
+  backdrop-filter:blur(12px);
+  border-radius:14px;
+  padding:12px;
+  border:1px solid rgba(124,124,255,.25);
+  box-shadow:0 0 30px rgba(124,124,255,.4);
+  color:white;
+}
+
+.player .title {
+  font-size:14px;
+  margin-bottom:6px;
+  text-align:center;
+  text-shadow:0 0 10px var(--neon);
+}
+
+.controls {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.controls button {
+  background:none;
+  border:none;
+  color:white;
+  font-size:18px;
+}
+
+.controls input[type=range] {
+  flex:1;
+  accent-color:#7c7cff;
+}
+
+.volume {
+  width:70px;
 }
 
 /* CURSOR TRAIL */
@@ -142,9 +169,7 @@ canvas {
 
 <div id="enter"><span>CLICK TO ENTER</span></div>
 
-<audio id="bgm" loop>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
+<audio id="audio" src="music.mp3"></audio>
 
 <div class="card">
   <img class="avatar" src="avatar.jpg">
@@ -156,43 +181,68 @@ canvas {
   </div>
 </div>
 
+<div class="player">
+  <div class="title">music.mp3</div>
+  <div class="controls">
+    <button id="play">▶</button>
+    <input type="range" id="progress" value="0">
+    <input type="range" class="volume" id="volume" min="0" max="1" step="0.01" value="0.4">
+  </div>
+</div>
+
 <canvas id="trail"></canvas>
 
 <script>
-/* ENTER + MUSIC */
-const enter = document.getElementById("enter");
-const music = document.getElementById("bgm");
-const video = document.getElementById("bg");
+/* ENTER */
+const enter=document.getElementById("enter");
+const audio=document.getElementById("audio");
+const video=document.getElementById("bg");
 
-enter.onclick = () => {
-  music.volume = 0.4;
-  music.play();
-  video.muted = false;
-  enter.style.display = "none";
+enter.onclick=()=>{
+  audio.volume=.4;
+  audio.play();
+  video.muted=false;
+  enter.style.display="none";
+};
+
+/* PLAYER */
+const playBtn=document.getElementById("play");
+const progress=document.getElementById("progress");
+const volume=document.getElementById("volume");
+
+playBtn.onclick=()=>{
+  if(audio.paused){audio.play();playBtn.textContent="⏸";}
+  else{audio.pause();playBtn.textContent="▶";}
+};
+
+audio.ontimeupdate=()=>{
+  progress.value=(audio.currentTime/audio.duration)*100||0;
+};
+
+progress.oninput=()=>{
+  audio.currentTime=(progress.value/100)*audio.duration;
+};
+
+volume.oninput=()=>{
+  audio.volume=volume.value;
 };
 
 /* CURSOR TRAIL */
 const c=document.getElementById("trail"),ctx=c.getContext("2d");
-resize(); window.onresize=resize;
-let pts=[];
-document.onmousemove=e=>pts.push({x:e.clientX,y:e.clientY,l:20});
+resize();window.onresize=resize;
+let p=[];
+document.onmousemove=e=>p.push({x:e.clientX,y:e.clientY,l:20});
 function resize(){c.width=innerWidth;c.height=innerHeight;}
-(function draw(){
+(function d(){
   ctx.clearRect(0,0,c.width,c.height);
-  pts.forEach(p=>{
-    ctx.fillStyle=`rgba(124,124,255,${p.l/20})`;
-    ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill();
-    p.l--;
+  p.forEach(o=>{
+    ctx.fillStyle=`rgba(124,124,255,${o.l/20})`;
+    ctx.beginPath();ctx.arc(o.x,o.y,4,0,Math.PI*2);ctx.fill();o.l--;
   });
-  pts=pts.filter(p=>p.l>0);
-  requestAnimationFrame(draw);
+  p=p.filter(o=>o.l>0);
+  requestAnimationFrame(d);
 })();
 </script>
 
 </body>
 </html>
-
-
-
-
-
