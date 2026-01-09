@@ -47,7 +47,7 @@ body {
   z-index:-2;
 }
 
-/* RGB ANIMATION */
+/* RGB */
 @keyframes rgb {
   0% { filter:hue-rotate(0deg); }
   100% { filter:hue-rotate(360deg); }
@@ -77,11 +77,11 @@ h1 {
   margin:14px 0;
   font-size:28px;
   color:white;
+  animation:rgb 6s linear infinite;
   text-shadow:
     0 0 5px #fff,
     0 0 15px #ff00ff,
     0 0 30px #00ffff;
-  animation:rgb 6s linear infinite;
 }
 
 /* LINKS */
@@ -162,16 +162,21 @@ h1 {
   accent-color:#7c7cff;
 }
 
-.volume {
-  width:70px;
+.volume { width:70px; }
+
+/* PAW TRAIL */
+.paw {
+  position:fixed;
+  width:22px;
+  height:22px;
+  pointer-events:none;
+  background:url("paw.png") center/contain no-repeat;
+  animation:fade .8s linear forwards;
 }
 
-/* CURSOR TRAIL */
-canvas {
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:5;
+@keyframes fade {
+  from { opacity:1; transform:scale(1); }
+  to   { opacity:0; transform:scale(.3); }
 }
 </style>
 </head>
@@ -206,8 +211,6 @@ canvas {
     <input type="range" class="volume" id="volume" min="0" max="1" step="0.01" value="0.4">
   </div>
 </div>
-
-<canvas id="trail"></canvas>
 
 <script>
 /* ENTER */
@@ -244,21 +247,15 @@ volume.oninput=()=>{
   audio.volume=volume.value;
 };
 
-/* CURSOR TRAIL */
-const c=document.getElementById("trail"),ctx=c.getContext("2d");
-resize();window.onresize=resize;
-let p=[];
-document.onmousemove=e=>p.push({x:e.clientX,y:e.clientY,l:20});
-function resize(){c.width=innerWidth;c.height=innerHeight;}
-(function d(){
-  ctx.clearRect(0,0,c.width,c.height);
-  p.forEach(o=>{
-    ctx.fillStyle=`rgba(124,124,255,${o.l/20})`;
-    ctx.beginPath();ctx.arc(o.x,o.y,4,0,Math.PI*2);ctx.fill();o.l--;
-  });
-  p=p.filter(o=>o.l>0);
-  requestAnimationFrame(d);
-})();
+/* PAW TRAIL */
+document.addEventListener("mousemove", e=>{
+  const paw=document.createElement("div");
+  paw.className="paw";
+  paw.style.left=e.clientX+"px";
+  paw.style.top=e.clientY+"px";
+  document.body.appendChild(paw);
+  setTimeout(()=>paw.remove(),800);
+});
 </script>
 
 </body>
