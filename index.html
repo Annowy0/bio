@@ -40,10 +40,17 @@ body {
 .overlay {
   position:fixed;
   inset:0;
-  background:radial-gradient(circle at 20% 20%, rgba(124,124,255,.2), transparent 40%),
-             radial-gradient(circle at 80% 80%, rgba(124,124,255,.15), transparent 40%),
-             rgba(0,0,0,.6);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(124,124,255,.2), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(124,124,255,.15), transparent 40%),
+    rgba(0,0,0,.6);
   z-index:-2;
+}
+
+/* RGB ANIMATION */
+@keyframes rgb {
+  0% { filter:hue-rotate(0deg); }
+  100% { filter:hue-rotate(360deg); }
 }
 
 /* CARD */
@@ -68,10 +75,16 @@ body {
 
 h1 {
   margin:14px 0;
+  font-size:28px;
   color:white;
-  text-shadow:0 0 20px var(--neon);
+  text-shadow:
+    0 0 5px #fff,
+    0 0 15px #ff00ff,
+    0 0 30px #00ffff;
+  animation:rgb 6s linear infinite;
 }
 
+/* LINKS */
 .links a {
   display:block;
   margin-top:14px;
@@ -111,7 +124,7 @@ h1 {
   bottom:20px;
   left:50%;
   transform:translateX(-50%);
-  width:340px;
+  width:360px;
   background:rgba(15,15,25,.85);
   backdrop-filter:blur(12px);
   border-radius:14px;
@@ -123,9 +136,12 @@ h1 {
 
 .player .title {
   font-size:14px;
-  margin-bottom:6px;
   text-align:center;
-  text-shadow:0 0 10px var(--neon);
+  margin-bottom:6px;
+  animation:rgb 4s linear infinite;
+  text-shadow:
+    0 0 10px #ff00ff,
+    0 0 20px #00ffff;
 }
 
 .controls {
@@ -174,6 +190,7 @@ canvas {
 <div class="card">
   <img class="avatar" src="avatar.jpg">
   <h1>Annowy</h1>
+
   <div class="links">
     <a href="https://discord.com/users/1155949512066601060" target="_blank">Discord</a>
     <a href="https://steamcommunity.com/id/annowy/" target="_blank">Steam</a>
@@ -182,7 +199,7 @@ canvas {
 </div>
 
 <div class="player">
-  <div class="title">music.mp3</div>
+  <div class="title">Better Off Alone x Clarity (sped up)</div>
   <div class="controls">
     <button id="play">▶</button>
     <input type="range" id="progress" value="0">
