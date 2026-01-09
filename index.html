@@ -6,122 +6,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root {
-  --neon: #7c7cff;
-}
+:root { --neon:#7c7cff; }
 
-* {
-  box-sizing: border-box;
-  font-family: Inter, Arial, sans-serif;
-}
+* { box-sizing:border-box; font-family:Inter,Arial,sans-serif; }
 
 body {
-  margin: 0;
-  height: 100vh;
-  background:
-    radial-gradient(circle at 20% 20%, #1a1a3a, #000),
-    radial-gradient(circle at 80% 80%, #2a1a3a, #000);
-  background-blend-mode: screen;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* VIDEO BACKGROUND */
+video#bg {
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-2;
+  filter: brightness(.4) blur(1px);
+}
+
+/* DARK OVERLAY */
+.overlay {
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at 20% 20%, rgba(124,124,255,.15), #000);
+  z-index:-1;
 }
 
 .card {
-  background: rgba(15,15,20,.9);
+  background: rgba(15,15,20,.85);
   padding: 32px;
   border-radius: 18px;
   width: 320px;
   text-align: center;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border: 1px solid rgba(124,124,255,.25);
   box-shadow:
     0 0 20px rgba(124,124,255,.3),
     0 0 40px rgba(124,124,255,.2),
     0 0 80px rgba(124,124,255,.1);
-  animation: fadeIn .6s ease;
 }
 
 .avatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow:
-    0 0 15px var(--neon),
-    0 0 30px rgba(124,124,255,.6);
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  object-fit:cover;
+  box-shadow:0 0 20px var(--neon);
 }
 
 h1 {
-  margin: 14px 0 6px;
-  color: white;
-  text-shadow:
-    0 0 5px #fff,
-    0 0 10px var(--neon),
-    0 0 20px var(--neon);
+  margin:14px 0;
+  color:white;
+  text-shadow:0 0 10px var(--neon);
 }
 
 .links a {
-  display: block;
-  margin-top: 14px;
-  padding: 12px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: white;
-  font-weight: 500;
-  background: linear-gradient(90deg, #5865F2, #7c7cff);
-  box-shadow:
-    0 0 10px rgba(124,124,255,.6),
-    0 0 20px rgba(124,124,255,.3);
-  transition: .2s;
+  display:block;
+  margin-top:14px;
+  padding:12px;
+  border-radius:10px;
+  color:white;
+  text-decoration:none;
+  background:linear-gradient(90deg,#5865F2,#7c7cff);
+  box-shadow:0 0 15px rgba(124,124,255,.5);
+  transition:.2s;
 }
-
 .links a:hover {
-  transform: scale(1.06);
-  animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 10px var(--neon); }
-  50% { box-shadow: 0 0 30px var(--neon); }
-  100% { box-shadow: 0 0 10px var(--neon); }
-}
-
-@keyframes fadeIn {
-  from { opacity:0; transform: translateY(20px); }
-  to { opacity:1; }
+  transform:scale(1.06);
+  box-shadow:0 0 30px var(--neon);
 }
 
 /* CLICK TO ENTER */
 #enter {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  cursor: pointer;
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
+  cursor:pointer;
 }
-
 #enter span {
-  color: white;
-  font-size: 24px;
-  letter-spacing: 4px;
-  text-shadow: 0 0 20px var(--neon);
+  color:white;
+  font-size:24px;
+  letter-spacing:4px;
+  text-shadow:0 0 20px var(--neon);
 }
 
-/* Cursor trail */
+/* CURSOR TRAIL */
 canvas {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
+  position:fixed;
+  inset:0;
+  pointer-events:none;
 }
 </style>
 </head>
 
 <body>
+
+<!-- BACKGROUND VIDEO -->
+<video id="bg" autoplay muted loop playsinline>
+  <source src="bg.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
 
 <div id="enter"><span>CLICK TO ENTER</span></div>
 
@@ -132,7 +126,6 @@ canvas {
 <div class="card">
   <img class="avatar" src="avatar.jpg">
   <h1>Annowy</h1>
-
   <div class="links">
     <a href="https://discord.com/users/1155949512066601060" target="_blank">Discord</a>
     <a href="https://steamcommunity.com/id/annowy/" target="_blank">Steam</a>
@@ -143,48 +136,37 @@ canvas {
 <canvas id="trail"></canvas>
 
 <script>
-/* music */
+/* MUSIC + ENTER */
 const enter = document.getElementById("enter");
 const music = document.getElementById("bgm");
+const video = document.getElementById("bg");
 
 enter.onclick = () => {
-  music.volume = 0.4;
+  music.volume = .4;
   music.play();
-  enter.style.display = "none";
+  video.muted = false;
+  enter.style.display="none";
 };
 
-/* cursor trail */
-const c = document.getElementById("trail");
-const ctx = c.getContext("2d");
-resize();
-window.onresize = resize;
-
-let points = [];
-document.onmousemove = e => {
-  points.push({x:e.clientX,y:e.clientY,life:20});
-};
-
-function resize(){
-  c.width = innerWidth;
-  c.height = innerHeight;
-}
-
-function draw(){
+/* CURSOR TRAIL */
+const c=document.getElementById("trail"),ctx=c.getContext("2d");
+resize(); window.onresize=resize;
+let p=[];
+document.onmousemove=e=>p.push({x:e.clientX,y:e.clientY,l:20});
+function resize(){c.width=innerWidth;c.height=innerHeight;}
+(function d(){
   ctx.clearRect(0,0,c.width,c.height);
-  points.forEach(p=>{
-    ctx.fillStyle = "rgba(124,124,255,"+(p.life/20)+")";
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,4,0,Math.PI*2);
-    ctx.fill();
-    p.life--;
+  p.forEach(o=>{
+    ctx.fillStyle=`rgba(124,124,255,${o.l/20})`;
+    ctx.beginPath();ctx.arc(o.x,o.y,4,0,Math.PI*2);ctx.fill();o.l--;
   });
-  points = points.filter(p=>p.life>0);
-  requestAnimationFrame(draw);
-}
-draw();
+  p=p.filter(o=>o.l>0);
+  requestAnimationFrame(d);
+})();
 </script>
 
 </body>
 </html>
+
 
 
