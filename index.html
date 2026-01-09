@@ -8,7 +8,15 @@
 <style>
 :root { --neon:#7c7cff; }
 
-* { box-sizing:border-box; font-family:Inter,Arial,sans-serif; }
+* {
+  box-sizing:border-box;
+  font-family:Inter,Arial,sans-serif;
+  cursor: url("cursor.png") 16 16, auto;
+}
+
+a, button {
+  cursor: url("cursor.png") 16 16, pointer;
+}
 
 body {
   margin:0;
@@ -20,36 +28,40 @@ body {
 }
 
 /* VIDEO BACKGROUND */
-video#bg {
+#bg {
   position:fixed;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  z-index:-2;
-  filter: brightness(.4) blur(1px);
+  z-index:-3;
+  filter:brightness(.4);
 }
 
-/* DARK OVERLAY */
+/* OVERLAY */
 .overlay {
   position:fixed;
   inset:0;
-  background:radial-gradient(circle at 20% 20%, rgba(124,124,255,.15), #000);
-  z-index:-1;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(124,124,255,.2), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(124,124,255,.15), transparent 40%),
+    rgba(0,0,0,.6);
+  z-index:-2;
 }
 
+/* CARD */
 .card {
-  background: rgba(15,15,20,.85);
-  padding: 32px;
-  border-radius: 18px;
-  width: 320px;
-  text-align: center;
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(124,124,255,.25);
+  background:rgba(15,15,20,.85);
+  padding:32px;
+  border-radius:18px;
+  width:320px;
+  text-align:center;
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(124,124,255,.25);
   box-shadow:
-    0 0 20px rgba(124,124,255,.3),
-    0 0 40px rgba(124,124,255,.2),
-    0 0 80px rgba(124,124,255,.1);
+    0 0 20px rgba(124,124,255,.35),
+    0 0 50px rgba(124,124,255,.25),
+    0 0 90px rgba(124,124,255,.15);
 }
 
 .avatar {
@@ -57,13 +69,18 @@ video#bg {
   height:96px;
   border-radius:50%;
   object-fit:cover;
-  box-shadow:0 0 20px var(--neon);
+  box-shadow:
+    0 0 20px var(--neon),
+    0 0 40px rgba(124,124,255,.6);
 }
 
 h1 {
   margin:14px 0;
   color:white;
-  text-shadow:0 0 10px var(--neon);
+  text-shadow:
+    0 0 5px white,
+    0 0 15px var(--neon),
+    0 0 30px var(--neon);
 }
 
 .links a {
@@ -74,12 +91,17 @@ h1 {
   color:white;
   text-decoration:none;
   background:linear-gradient(90deg,#5865F2,#7c7cff);
-  box-shadow:0 0 15px rgba(124,124,255,.5);
-  transition:.2s;
+  box-shadow:
+    0 0 15px rgba(124,124,255,.6),
+    0 0 30px rgba(124,124,255,.3);
+  transition:.25s;
 }
+
 .links a:hover {
-  transform:scale(1.06);
-  box-shadow:0 0 30px var(--neon);
+  transform:scale(1.07);
+  box-shadow:
+    0 0 30px var(--neon),
+    0 0 60px rgba(124,124,255,.9);
 }
 
 /* CLICK TO ENTER */
@@ -93,11 +115,12 @@ h1 {
   z-index:99;
   cursor:pointer;
 }
+
 #enter span {
   color:white;
-  font-size:24px;
+  font-size:26px;
   letter-spacing:4px;
-  text-shadow:0 0 20px var(--neon);
+  text-shadow:0 0 25px var(--neon);
 }
 
 /* CURSOR TRAIL */
@@ -105,13 +128,13 @@ canvas {
   position:fixed;
   inset:0;
   pointer-events:none;
+  z-index:5;
 }
 </style>
 </head>
 
 <body>
 
-<!-- BACKGROUND VIDEO -->
 <video id="bg" autoplay muted loop playsinline>
   <source src="bg.mp4" type="video/mp4">
 </video>
@@ -136,37 +159,39 @@ canvas {
 <canvas id="trail"></canvas>
 
 <script>
-/* MUSIC + ENTER */
+/* ENTER + MUSIC */
 const enter = document.getElementById("enter");
 const music = document.getElementById("bgm");
 const video = document.getElementById("bg");
 
 enter.onclick = () => {
-  music.volume = .4;
+  music.volume = 0.4;
   music.play();
   video.muted = false;
-  enter.style.display="none";
+  enter.style.display = "none";
 };
 
 /* CURSOR TRAIL */
 const c=document.getElementById("trail"),ctx=c.getContext("2d");
 resize(); window.onresize=resize;
-let p=[];
-document.onmousemove=e=>p.push({x:e.clientX,y:e.clientY,l:20});
+let pts=[];
+document.onmousemove=e=>pts.push({x:e.clientX,y:e.clientY,l:20});
 function resize(){c.width=innerWidth;c.height=innerHeight;}
-(function d(){
+(function draw(){
   ctx.clearRect(0,0,c.width,c.height);
-  p.forEach(o=>{
-    ctx.fillStyle=`rgba(124,124,255,${o.l/20})`;
-    ctx.beginPath();ctx.arc(o.x,o.y,4,0,Math.PI*2);ctx.fill();o.l--;
+  pts.forEach(p=>{
+    ctx.fillStyle=`rgba(124,124,255,${p.l/20})`;
+    ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill();
+    p.l--;
   });
-  p=p.filter(o=>o.l>0);
-  requestAnimationFrame(d);
+  pts=pts.filter(p=>p.l>0);
+  requestAnimationFrame(draw);
 })();
 </script>
 
 </body>
 </html>
+
 
 
 
