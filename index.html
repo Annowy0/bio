@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Annowy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root {
+  --neon: #7c7cff;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Inter, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  background:
+    radial-gradient(circle at 20% 20%, #1a1a3a, #000),
+    radial-gradient(circle at 80% 80%, #2a1a3a, #000);
+  background-blend-mode: screen;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card {
+  background: rgba(15,15,20,.9);
+  padding: 32px;
+  border-radius: 18px;
+  width: 320px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(124,124,255,.25);
+  box-shadow:
+    0 0 20px rgba(124,124,255,.3),
+    0 0 40px rgba(124,124,255,.2),
+    0 0 80px rgba(124,124,255,.1);
+  animation: fadeIn .6s ease;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow:
+    0 0 15px var(--neon),
+    0 0 30px rgba(124,124,255,.6);
+}
+
+h1 {
+  margin: 14px 0 6px;
+  color: white;
+  text-shadow:
+    0 0 5px #fff,
+    0 0 10px var(--neon),
+    0 0 20px var(--neon);
+}
+
+.links a {
+  display: block;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  background: linear-gradient(90deg, #5865F2, #7c7cff);
+  box-shadow:
+    0 0 10px rgba(124,124,255,.6),
+    0 0 20px rgba(124,124,255,.3);
+  transition: .2s;
+}
+
+.links a:hover {
+  transform: scale(1.06);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px var(--neon); }
+  50% { box-shadow: 0 0 30px var(--neon); }
+  100% { box-shadow: 0 0 10px var(--neon); }
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(20px); }
+  to { opacity:1; }
+}
+
+/* Cursor trail */
+canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <img class="avatar" src="https://i.pinimg.com/originals/72/18/42/721842646541698042.jpg">
+  <h1>Annowy</h1>
+
+  <div class="links">
+    <a href="https://discord.com/users/1155949512066601060" target="_blank">Discord</a>
+    <a href="https://steamcommunity.com/id/annowy/" target="_blank">Steam</a>
+    <a href="https://open.spotify.com/user/31mwpdkirky5jzuginw5h3lgkzzu" target="_blank">Spotify</a>
+  </div>
+</div>
+
+<canvas id="trail"></canvas>
+
+<script>
+const c = document.getElementById("trail");
+const ctx = c.getContext("2d");
+resize();
+window.onresize = resize;
+
+let points = [];
+document.onmousemove = e => {
+  points.push({x:e.clientX,y:e.clientY,life:20});
+};
+
+function resize(){
+  c.width = innerWidth;
+  c.height = innerHeight;
+}
+
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  points.forEach(p=>{
+    ctx.fillStyle = "rgba(124,124,255,"+(p.life/20)+")";
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,4,0,Math.PI*2);
+    ctx.fill();
+    p.life--;
+  });
+  points = points.filter(p=>p.life>0);
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
