@@ -8,17 +8,16 @@
 <style>
 :root { --neon:#7c7cff; }
 
-* {
+*{
   box-sizing:border-box;
   font-family:Inter,Arial,sans-serif;
   cursor:url("cursor.png") 16 16, auto;
 }
-
-a, button, input {
+a,button,input{
   cursor:url("cursor.png") 16 16, pointer;
 }
 
-body {
+body{
   margin:0;
   height:100vh;
   overflow:hidden;
@@ -27,8 +26,8 @@ body {
   justify-content:center;
 }
 
-/* VIDEO BG */
-#bg {
+/* VIDEO BACKGROUND */
+#bg{
   position:fixed;
   inset:0;
   width:100%;
@@ -37,8 +36,7 @@ body {
   filter:brightness(.4);
   z-index:-3;
 }
-
-.overlay {
+.overlay{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.65);
@@ -46,79 +44,40 @@ body {
 }
 
 /* RGB */
-@keyframes rgb {
-  0% { filter:hue-rotate(0deg); }
-  100% { filter:hue-rotate(360deg); }
+@keyframes rgb{
+  0%{filter:hue-rotate(0deg)}
+  100%{filter:hue-rotate(360deg)}
 }
 
-/* CARD */
-.card {
+/* MAIN CARD */
+.card{
+  width:320px;
   background:rgba(15,15,20,.85);
-  padding:24px;
-  border-radius:18px;
-  width:340px;
-  text-align:center;
   backdrop-filter:blur(14px);
+  border-radius:18px;
+  padding:30px;
   border:1px solid rgba(124,124,255,.25);
   box-shadow:0 0 30px rgba(124,124,255,.4);
+  text-align:center;
 }
 
-/* DISCORD CARD */
-.discord-card {
-  border-radius:14px;
-  overflow:hidden;
-  margin-bottom:18px;
-  background:#0f0f1a;
-  border:1px solid rgba(124,124,255,.25);
-}
-
-.discord-banner {
-  height:120px;
-  background-size:cover;
-  background-position:center;
-}
-
-.discord-info {
-  padding:14px;
-  margin-top:-40px;
-}
-
-.discord-avatar {
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  border:3px solid #0f0f1a;
-  box-shadow:0 0 20px var(--neon);
-}
-
-.discord-name {
-  margin-top:8px;
-  font-size:18px;
+/* NAME */
+h1{
+  margin-bottom:20px;
+  font-size:30px;
   color:white;
   animation:rgb 6s linear infinite;
-}
-
-.status {
-  font-size:13px;
-  margin-top:4px;
-}
-
-.status.online { color:#3ba55d; }
-.status.idle { color:#faa61a; }
-.status.dnd { color:#ed4245; }
-.status.offline { color:#747f8d; }
-
-.activity {
-  font-size:12px;
-  color:#ccc;
-  margin-top:6px;
+  text-shadow:
+    0 0 5px #fff,
+    0 0 15px #ff00ff,
+    0 0 30px #00ffff;
 }
 
 /* LINKS */
-.links a {
+.links a{
   display:block;
-  margin-top:12px;
-  padding:12px;
+  margin-top:14px;
+  padding:13px;
   border-radius:10px;
   color:white;
   text-decoration:none;
@@ -126,13 +85,13 @@ body {
   box-shadow:0 0 15px rgba(124,124,255,.6);
   transition:.2s;
 }
-.links a:hover {
+.links a:hover{
   transform:scale(1.06);
   box-shadow:0 0 40px var(--neon);
 }
 
 /* MUSIC PLAYER */
-.player {
+.player{
   position:fixed;
   bottom:20px;
   left:50%;
@@ -146,13 +105,28 @@ body {
   box-shadow:0 0 30px rgba(124,124,255,.4);
   color:white;
 }
-
-.player .title {
+.player .title{
   font-size:14px;
   text-align:center;
-  margin-bottom:6px;
   animation:rgb 4s linear infinite;
 }
+.controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:6px;
+}
+.controls button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:18px;
+}
+.controls input[type=range]{
+  flex:1;
+  accent-color:#7c7cff;
+}
+.volume{width:70px;}
 </style>
 </head>
 
@@ -164,66 +138,49 @@ body {
 <div class="overlay"></div>
 
 <div class="card">
+  <h1>Annowy</h1>
 
-  <!-- DISCORD LIVE CARD -->
-  <div class="discord-card">
-    <div id="banner" class="discord-banner"></div>
-    <div class="discord-info">
-      <img id="avatar" class="discord-avatar">
-      <div id="username" class="discord-name">Annowy</div>
-      <div id="status" class="status">Loading...</div>
-      <div id="activity" class="activity"></div>
-    </div>
-  </div>
-
-  <!-- LINKS -->
   <div class="links">
     <a href="https://discord.com/users/1155949512066601060" target="_blank">Discord</a>
     <a href="https://steamcommunity.com/id/annowy/" target="_blank">Steam</a>
     <a href="https://open.spotify.com/user/31mwpdkirky5jzuginw5h3lgkzzu" target="_blank">Spotify</a>
   </div>
-
 </div>
 
 <div class="player">
   <div class="title">Better Off Alone x Clarity (sped up)</div>
+  <div class="controls">
+    <button id="play">▶</button>
+    <input type="range" id="progress" value="0">
+    <input type="range" class="volume" id="volume" min="0" max="1" step="0.01" value="0.4">
+  </div>
 </div>
 
+<audio id="audio" src="music.mp3"></audio>
+
 <script>
-const id = "1155949512066601060";
-const api = `https://api.lanyard.rest/v1/users/${id}`;
+const audio=document.getElementById("audio");
+const play=document.getElementById("play");
+const progress=document.getElementById("progress");
+const volume=document.getElementById("volume");
 
-async function loadDiscord(){
-  const r = await fetch(api);
-  const d = (await r.json()).data;
+play.onclick=()=>{
+  if(audio.paused){audio.play();play.textContent="⏸";}
+  else{audio.pause();play.textContent="▶";}
+};
 
-  document.getElementById("avatar").src =
-    `https://cdn.discordapp.com/avatars/${id}/${d.discord_user.avatar}.png?size=256`;
-
-  if(d.discord_user.banner){
-    document.getElementById("banner").style.backgroundImage =
-      `url(https://cdn.discordapp.com/banners/${id}/${d.discord_user.banner}.png?size=512)`;
-  } else {
-    document.getElementById("banner").style.background =
-      "linear-gradient(135deg,#5865F2,#7c7cff)";
-  }
-
-  const statusEl = document.getElementById("status");
-  statusEl.textContent = d.discord_status.toUpperCase();
-  statusEl.className = "status " + d.discord_status;
-
-  if(d.activities.length > 0){
-    document.getElementById("activity").textContent =
-      d.activities[0].name;
-  } else {
-    document.getElementById("activity").textContent = "";
-  }
-}
-
-loadDiscord();
-setInterval(loadDiscord, 15000);
+audio.ontimeupdate=()=>{
+  progress.value=(audio.currentTime/audio.duration)*100||0;
+};
+progress.oninput=()=>{
+  audio.currentTime=(progress.value/100)*audio.duration;
+};
+volume.oninput=()=>{
+  audio.volume=volume.value;
+};
 </script>
 
 </body>
 </html>
+
 
