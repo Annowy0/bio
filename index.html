@@ -14,7 +14,9 @@
   cursor:url("cursor.png") 16 16, auto;
 }
 
-a, button, input { cursor:url("cursor.png") 16 16, pointer; }
+a, button, input {
+  cursor:url("cursor.png") 16 16, pointer;
+}
 
 body {
   margin:0;
@@ -163,21 +165,6 @@ h1 {
 }
 
 .volume { width:70px; }
-
-/* PAW TRAIL */
-.paw {
-  position:fixed;
-  width:22px;
-  height:22px;
-  pointer-events:none;
-  background:url("paw.png") center/contain no-repeat;
-  animation:fade .8s linear forwards;
-}
-
-@keyframes fade {
-  from { opacity:1; transform:scale(1); }
-  to   { opacity:0; transform:scale(.3); }
-}
 </style>
 </head>
 
@@ -213,7 +200,6 @@ h1 {
 </div>
 
 <script>
-/* ENTER */
 const enter=document.getElementById("enter");
 const audio=document.getElementById("audio");
 const video=document.getElementById("bg");
@@ -225,7 +211,6 @@ enter.onclick=()=>{
   enter.style.display="none";
 };
 
-/* PLAYER */
 const playBtn=document.getElementById("play");
 const progress=document.getElementById("progress");
 const volume=document.getElementById("volume");
@@ -246,16 +231,6 @@ progress.oninput=()=>{
 volume.oninput=()=>{
   audio.volume=volume.value;
 };
-
-/* PAW TRAIL */
-document.addEventListener("mousemove", e=>{
-  const paw=document.createElement("div");
-  paw.className="paw";
-  paw.style.left=e.clientX+"px";
-  paw.style.top=e.clientY+"px";
-  document.body.appendChild(paw);
-  setTimeout(()=>paw.remove(),800);
-});
 </script>
 
 </body>
